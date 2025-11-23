@@ -31,7 +31,9 @@ Each line represents one vehicle in this format:  vehicleID,makeModel,type,statu
 ## How to Run
 Follow these steps to compile and run the application from your command line:
 Save Files: Ensure all Java classes (Program.java, Vehicle.java, Admin.java, Customer.java, Rental.java) are saved in the same directory.
+
 Create Data File: In that same directory, create an empty text file named Vehicles.txt.
+
 Compile: Open your terminal or command prompt and run the following command:  
 ###### javac Program.java Vehicle.java Admin.java Customer.java Rental.java
 Run: Execute the compiled program:
