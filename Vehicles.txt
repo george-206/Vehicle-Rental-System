@@ -1,0 +1,4 @@
+V1001,Toyota Corolla,Car,available,35.0
+V1002,Honda Civic,Car,available,40.0
+V1001,Toyota Corolla,Car,available,35.0
+V1002,Honda Civic,Car,available,40.0

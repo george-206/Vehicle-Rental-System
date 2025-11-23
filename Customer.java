@@ -31,12 +31,12 @@ public class Customer {
        if (v.isAvailable()) 
         {
           v.setStatus("rented");
-          System.out.println("The vehicle " + v.getMakeModel() + " is rented SUCCESSFULLY!"); 
+          System.out.println("The vehicle " + v.getMakeModel() + " rented Successfully"); 
           return v;
         }
       }
     }
-    System.out.println("The vehicle isn't available!");  
+    System.out.println("The vehicle is not available");  
      return null;
   }
   float charge(Vehicle v , int days)

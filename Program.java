@@ -1,4 +1,8 @@
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 
@@ -10,9 +14,45 @@ public class Program {
       System.out.println("--------------------------------");
       
       ArrayList<Vehicle> vehicles = new ArrayList<>();
-      vehicles.add(new Vehicle("V1001", "Toyota Corolla", "Car", "available", 35.0f));
-      vehicles.add(new Vehicle("V1002", "Honda Civic", "Car","available", 40.0f));
-
+      try 
+      {
+        File f = new File("Vehicles.txt"); // Reading From File
+        Scanner reader = new Scanner(f);
+        while (reader.hasNextLine()) 
+        {
+           String line = reader.nextLine();
+           StringBuilder sb = new StringBuilder();
+           String[] strings = new String[5];
+           int index = 0;
+          for (int i = 0; i < line.length(); i++) 
+          {
+            if(line.charAt(i) != ',')
+            {
+              sb.append(line.charAt(i));
+            }
+            if(line.charAt(i) == ',' || i == line.length()-1)
+            {
+               strings[index] = sb.toString();
+               index++;
+               sb.setLength(0);
+            }
+          }
+          try 
+          {
+              float dailyRate = Float.parseFloat(strings[4]);
+              vehicles.add(new Vehicle(strings[0], strings[1], strings[2], strings[3], dailyRate));
+          } 
+          catch (NumberFormatException e)
+           {
+              System.out.println("Error: Daily Rate is not a valid number in line: " + line);
+           }
+        }
+        reader.close();
+      }
+      catch (Exception e) 
+      {
+        System.out.println("Error In Extracting data: " + e.getMessage());
+      }
       char c = ' ';  
       System.out.println("Choose: \n[1] to login as an admin\n[2] to log in as a user" +
       "\n[3] to Quit");
@@ -30,6 +70,7 @@ public class Program {
       String customerName = "";
       
       int rentalCount = 1;
+      
       while (true) 
       {       
         
@@ -58,13 +99,17 @@ public class Program {
               a1.setPassword(password);
               System.out.println("Choose: \n[1] to add a vehicle" + 
               "\n[2] to view available vehicles" +
-              "\n[3] to view the vehicles that are in maintenance");
+              "\n[3] to view the vehicles that are in maintenance" +
+              "\n[4] to set the status of the vehicle");
               char adminChoice;
-              do {
+              do 
+              {
                  adminChoice = sc.next().charAt(0);
-              } while (adminChoice != '1' && adminChoice != '2' && adminChoice != '3');
+              } while (adminChoice != '1' && adminChoice != '2' && adminChoice != '3' && adminChoice != '4');
               sc.nextLine();
-              switch (adminChoice) {
+              
+              switch (adminChoice) 
+              {
                 case '1':
                   System.out.print("Write the ID: ");
                   boolean flag = true;
@@ -94,7 +139,8 @@ public class Program {
 
                   System.out.print("Write the daily cost: ");
                   float dailyRate = 0;
-                  do {
+                  do 
+                  {
                     dailyRate = sc.nextFloat();
                   } while (dailyRate <=0);
 
@@ -109,7 +155,19 @@ public class Program {
                 case '3':
                  a1.viewInMaintenance(vehicles);
                 break;
-                
+
+                case '4':
+                    System.out.print("Write the name of the vehicle that you want to change its status: ");
+                    String modelName = sc.nextLine();
+                    System.out.print("Write the desired status: ");
+                    String st;
+                    do 
+                    {
+                      st = sc.nextLine();
+                    } while (!st.equalsIgnoreCase("available") && !st.equalsIgnoreCase("maintenance"));
+                   a1.changeStatus(modelName, st, vehicles);  
+                   break;
+                 
                 default:
                   break;
               }
@@ -133,23 +191,36 @@ public class Program {
             Vehicle rentedVehicle = c1.requestRental(carModel, vehicles); 
             if (rentedVehicle != null) 
             {
-               System.out.print("How many days do you want to rent the vehicle? ");
-               int days = 0;
+               System.out.print("How many days do you want to rent the vehicle? "); // date & time
+               int totalDays = 0;
                do 
                {
-                  days = sc.nextInt();
-               } while (days <=0);
-              
-               Rental rental = new Rental();
+                  totalDays = sc.nextInt();
+               } while (totalDays <=0);
+               sc.nextLine();
+               System.out.println("Write the date in this format: year-month-day (eg:2000-01-01)");
+               String date;
+               do
+               {
+                 date = sc.nextLine();
+               } while (date.length() < 10 || date.charAt(4) != '-' || date.charAt(7) != '-');
+               
+               DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+               LocalDate startDate = LocalDate.parse(date , format);
+               rentedVehicle.setLastServiceDate(startDate , totalDays);
+
+               Rental rental = new Rental();                          //   receipt
                System.out.println("--------------------");
                System.out.println("Here is your receipt");
                System.out.println("      --------");
                rental.setRentalID("R100" + rentalCount);
                rental.setVehicleId(rentedVehicle);
                rentalCount++;
-               float totalCharge = c1.charge(rentedVehicle, days);
+               float totalCharge = c1.charge(rentedVehicle, totalDays);
                System.out.println("Receipt ID: " + rental.getRentalId());
                System.out.println("Vehicle ID: " + rental.getVehicleID());
+               System.out.println("Customer Name: " + c1.getName());
+               System.out.println("Start date: " + startDate + "\nEnd date: " + rentedVehicle.getLastServiceDate());
                System.out.println("Total charge: $"+ totalCharge);
                System.out.println("--------------------");  
             }  
@@ -163,7 +234,22 @@ public class Program {
         if(c == '3')
            break;
       }
-       
+      
+      try 
+      { 
+        FileWriter fWriter = new FileWriter("Vehicles.txt"); // Writing in a file
+        for (Vehicle vehicle : vehicles) 
+        {
+          fWriter.write(vehicle.getVehicleId() + "," + vehicle.getMakeModel() + "," +
+          vehicle.getType() + "," + vehicle.getStatus() + "," + vehicle.getDailyRate() + "\n");  
+        }
+        fWriter.close();
+      } 
+      catch (Exception e)
+      {
+        System.out.println("Error Writing File: " + e.getMessage());
+      }
+      
       sc.close(); 
     }
 
@@ -180,4 +266,5 @@ public class Program {
               System.out.println("------------------------------------");
         }
     }
+
 }

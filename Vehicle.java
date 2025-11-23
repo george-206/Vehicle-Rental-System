@@ -8,6 +8,11 @@ public class Vehicle {
     private float dailyRate;
     private LocalDate lastServiceDate;
 
+    Vehicle()
+    {
+
+    }
+
    Vehicle(String vehicleID,String makeModel ,String type, String status, float dailyRate)
    {
       this.vehicleID = vehicleID;
@@ -36,6 +41,10 @@ public class Vehicle {
     {
        return this.dailyRate;
     }
+    LocalDate getLastServiceDate()
+    {
+       return lastServiceDate;
+    }
 
     void setVehicleId(String id)
     {
@@ -57,6 +66,10 @@ public class Vehicle {
     {
        this.dailyRate = cost;
     }
+    void setLastServiceDate(LocalDate start , int days)
+    {
+       lastServiceDate = start.plusDays(days);
+    }
     
     void display()
     {
@@ -65,12 +78,13 @@ public class Vehicle {
        System.out.println("Type: " + type );
        System.out.println("Status: " + status);
        System.out.println("Daily rate: " + dailyRate);
-       System.out.println("Last service date: " + lastServiceDate);
+       if(lastServiceDate != null)
+          System.out.println("Last service date: " + lastServiceDate);
        System.out.println("--------------------------------------");
     }
     boolean isAvailable()
     {
-       return status.equalsIgnoreCase("available");
+        return status.equalsIgnoreCase("available");    
     }
     void markMaintenance(LocalDate date)
     {
