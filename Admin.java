@@ -44,4 +44,31 @@ public class Admin {
             System.out.println("There are no vehicles in maintenance");
         }
     }
+    void changeStatus(String modelName , String st , ArrayList<Vehicle> vehicles)
+    {
+       boolean found = false;
+      
+         for (Vehicle vehicle_Item : vehicles) 
+            {
+              if (modelName.equalsIgnoreCase(vehicle_Item.getMakeModel())) 
+                  {
+                     if(st.equalsIgnoreCase("available"))
+                     {
+                       vehicle_Item.setStatus("available");
+                       System.out.println("Changed to \"available\" successfully");
+                     }
+                     else if(st.equalsIgnoreCase("maintenance"))
+                     {
+                      vehicle_Item.setStatus("maintenance");
+                      System.out.println("Changed to \"maintenance\" successfully");
+                     }
+                     found = true;
+                    break;
+                  }  
+             }
+           if (!found) 
+           {
+            System.out.println("The vehicle is not found");  
+           }
+    }
 }
